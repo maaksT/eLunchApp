@@ -8,20 +8,31 @@ import javax.validation.constraints.NotNull;
 @GeneratePojoBuilder
 @Embeddable
 public class Address {
+
     @NotNull
     private String street;
+
     @NotNull
     private String streetNumber;
+
     @NotNull
     private String localNumber;
+
+    @NotNull
+    private String postcode;
+
     @NotNull
     private String city;
+
     @Nullable
     private String borough;
+
     @Nullable
     private String county;
+
     @Nullable
     private String state;
+
 
     public String getStreet() {
         return street;
@@ -45,6 +56,14 @@ public class Address {
 
     public void setLocalNumber(String localNumber) {
         this.localNumber = localNumber;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
     }
 
     public String getCity() {

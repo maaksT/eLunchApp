@@ -21,6 +21,7 @@ public class OrderStatus {
     @NotNull
     private Instant deliveryTime;
 
+
     public Instant getOrderTime() {
         return orderTime;
     }
@@ -29,11 +30,11 @@ public class OrderStatus {
         this.orderTime = orderTime;
     }
 
-    public Boolean getPaid() {
+    public Boolean getIsPaid() {
         return isPaid;
     }
 
-    public void setPaid(Boolean paid) {
+    public void setIsPaid(Boolean paid) {
         isPaid = paid;
     }
 

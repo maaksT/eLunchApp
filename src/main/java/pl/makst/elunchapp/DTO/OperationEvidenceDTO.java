@@ -16,20 +16,24 @@ import java.time.Instant;
 @GeneratePojoBuilder
 public class OperationEvidenceDTO {
     public static class View {
-        public interface Basic{}
+        public interface Basic {}
         public interface Extended extends Basic {}
     }
+
     @JsonView(View.Basic.class)
     @NotNull
     private Instant date;
+
     @JsonView(View.Basic.class)
     @NotNull
     private EvidenceType type;
+
     @JsonView(View.Extended.class)
     @NotNull
     @Digits(integer = 10, fraction = 2)
     @Min(0)
     private BigDecimal amount;
+
     @JsonIgnore
     @NotNull
     private UserDTO user;

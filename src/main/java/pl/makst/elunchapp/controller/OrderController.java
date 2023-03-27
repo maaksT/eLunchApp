@@ -95,14 +95,14 @@ public class OrderController {
 
     @Transactional
     @Validated(GiveOutValidation.class)
-    @PatchMapping("/{uuid}/paid")
+    @PatchMapping("/{uuid}/gived-out")
     public void patchIsGivenOut(@PathVariable UUID uuid, @RequestBody @Valid OrderStatusDTO orderStatusJson) {
         orderService.setIsGivedOut(uuid,orderStatusJson);
     }
 
     @Transactional
     @Validated(DeliveryValidation.class)
-    @PatchMapping("/{uuid}/paid")
+    @PatchMapping("/{uuid}/delivered")
     public void patchIsDelivered(@PathVariable UUID uuid, @RequestBody @Valid OrderStatusDTO orderStatusJson) {
         orderService.setIsGivedOut(uuid,orderStatusJson);
     }

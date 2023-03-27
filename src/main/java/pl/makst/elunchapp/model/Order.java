@@ -24,24 +24,24 @@ public class Order {
     @NotNull
     private UUID uuid;
 
-    @Column(scale = 2,precision = 12)
-    @Digits(integer = 10,fraction = 2)
+    @Column(scale = 2, precision = 12)
+    @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal nettoPrice;
 
-    @Column(scale = 2,precision = 12)
-    @Digits(integer = 10,fraction = 2)
+    @Column(scale = 2, precision = 12)
+    @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal bruttoPrice;
 
-    @NotNull
+    @Nullable
     @ManyToOne
     private DiscountCode discountCode;
 
-    @Column(scale = 2,precision = 12)
-    @Digits(integer = 10,fraction = 2)
+    @Column(scale = 2, precision = 12)
+    @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal amountToPayBrutto;
@@ -52,7 +52,11 @@ public class Order {
 
     @NotNull
     @Embedded
-    private OrderStatus orderStatus;
+    private OrderStatus status;
+
+    @NotNull
+    @OneToOne
+    private DeliveryAddress deliveryAddress;
 
     @NotNull
     @Size(min = 1)
@@ -70,6 +74,7 @@ public class Order {
     @NotNull
     @ManyToOne
     private Restaurant restaurant;
+
 
     public Long getId() {
         return id;
@@ -91,8 +96,8 @@ public class Order {
         return nettoPrice;
     }
 
-    public void setNettoPrice(BigDecimal nettoPrice) {
-        this.nettoPrice = nettoPrice;
+    public void setNettoPrice(BigDecimal neetoPrice) {
+        this.nettoPrice = neetoPrice;
     }
 
     public BigDecimal getBruttoPrice() {
@@ -103,11 +108,12 @@ public class Order {
         this.bruttoPrice = bruttoPrice;
     }
 
+    @Nullable
     public DiscountCode getDiscountCode() {
         return discountCode;
     }
 
-    public void setDiscountCode(DiscountCode discountCode) {
+    public void setDiscountCode(@Nullable DiscountCode discountCode) {
         this.discountCode = discountCode;
     }
 
@@ -128,12 +134,20 @@ public class Order {
         this.note = note;
     }
 
-    public OrderStatus getOrderStatus() {
-        return orderStatus;
+    public OrderStatus getStatus() {
+        return status;
     }
 
-    public void setOrderStatus(OrderStatus orderStatus) {
-        this.orderStatus = orderStatus;
+    public void setStatus(OrderStatus orderStatus) {
+        this.status = orderStatus;
+    }
+
+    public DeliveryAddress getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(DeliveryAddress deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
     }
 
     public List<OrderItem> getOrderItems() {

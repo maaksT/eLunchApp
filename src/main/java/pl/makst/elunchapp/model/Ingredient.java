@@ -12,6 +12,7 @@ import java.util.UUID;
 @GeneratePojoBuilder
 @Entity
 public class Ingredient {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -25,6 +26,7 @@ public class Ingredient {
 
     @NotNull
     private Boolean isAllergen;
+
 
     public Long getId() {
         return id;
@@ -50,7 +52,7 @@ public class Ingredient {
         this.name = name;
     }
 
-    public Boolean getAllergen() {
+    public Boolean getIsAllergen() {
         return isAllergen;
     }
 

@@ -18,6 +18,7 @@ public class PeriodTime {
     @Nullable
     private LocalTime end;
 
+
     @Nullable
     public LocalTime getBegin() {
         return begin;

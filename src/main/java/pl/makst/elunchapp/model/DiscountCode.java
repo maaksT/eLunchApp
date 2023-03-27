@@ -26,8 +26,9 @@ public class DiscountCode {
 
     @NotBlank
     private String code;
-    @Column(scale = 2,precision = 12)
-    @Digits(integer = 10,fraction = 2)
+
+    @Column(scale = 2, precision = 12)
+    @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal discount;
@@ -36,6 +37,10 @@ public class DiscountCode {
     @Enumerated(EnumType.STRING)
     private DiscountUnit discountUnit;
 
+    @NotNull
+    @Embedded
+    private Period period;
+
     @Nullable
     @ManyToMany
     private List<User> users;
@@ -43,6 +48,7 @@ public class DiscountCode {
     @Nullable
     @ManyToMany
     private List<Restaurant> restaurants;
+
 
     public Long getId() {
         return id;
@@ -74,6 +80,14 @@ public class DiscountCode {
 
     public void setDiscount(BigDecimal discount) {
         this.discount = discount;
+    }
+
+    public Period getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(Period period) {
+        this.period = period;
     }
 
     public DiscountUnit getDiscountUnit() {

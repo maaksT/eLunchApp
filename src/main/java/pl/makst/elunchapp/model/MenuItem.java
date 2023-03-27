@@ -23,26 +23,32 @@ public class MenuItem {
 
     @NotBlank
     private String name;
-    @Column(scale = 2,precision = 12)
-    @Digits(integer = 10,fraction = 2)
+
+    @Column(scale = 2, precision = 12)
+    @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal nettoPrice;
-    @Column(scale = 2,precision = 12)
-    @Digits(integer = 10,fraction = 2)
-    @Min(0)
-    @NotNull
-    private BigDecimal bruttoPrice;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private VatTax vatTax;
+
+    @Column(scale = 2, precision = 12)
+    @Digits(integer = 10, fraction = 2)
+    @Min(0)
+    @NotNull
+    private BigDecimal bruttoPrice;
+
     @NotNull
     @Size(min = 1)
     @ManyToMany
     private List<Dish> dishes;
+
     @NotNull
     @ManyToOne
     private Restaurant restaurant;
+
 
     public Long getId() {
         return id;
@@ -72,16 +78,8 @@ public class MenuItem {
         return nettoPrice;
     }
 
-    public void setNettoPrice(BigDecimal nettoPrice) {
-        this.nettoPrice = nettoPrice;
-    }
-
-    public BigDecimal getBruttoPrice() {
-        return bruttoPrice;
-    }
-
-    public void setBruttoPrice(BigDecimal bruttoPrice) {
-        this.bruttoPrice = bruttoPrice;
+    public void setNettoPrice(BigDecimal neetoPrice) {
+        this.nettoPrice = neetoPrice;
     }
 
     public VatTax getVatTax() {
@@ -90,6 +88,14 @@ public class MenuItem {
 
     public void setVatTax(VatTax vatTax) {
         this.vatTax = vatTax;
+    }
+
+    public BigDecimal getBruttoPrice() {
+        return bruttoPrice;
+    }
+
+    public void setBruttoPrice(BigDecimal bruttoPrice) {
+        this.bruttoPrice = bruttoPrice;
     }
 
     public List<Dish> getDishes() {

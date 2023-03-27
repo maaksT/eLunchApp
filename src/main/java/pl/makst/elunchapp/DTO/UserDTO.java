@@ -17,7 +17,7 @@ import java.util.UUID;
 @GeneratePojoBuilder
 public class UserDTO {
     public static class View {
-        public interface Id{}
+        public interface Id {}
         public interface Basic extends Id {}
         public interface Extended extends Basic {}
     }
@@ -27,29 +27,36 @@ public class UserDTO {
     @JsonView(View.Id.class)
     @NotNull
     private UUID uuid;
+
     @JsonView(View.Basic.class)
     @NotNull
     @Embedded
     private PersonalDataDTO personalData;
+
     @JsonView(View.Extended.class)
     @Nullable
     private List<DeliveryAddressDTO> deliveryAddress;
+
     @JsonView(View.Extended.class)
     @NotNull
     @Embedded
     private LogginDataDTO logginData;
+
     @JsonIgnore
     @Nullable
     @Null(groups = DataUpdateValidation.class)
     private List<OrderDTO> orders;
+
     @JsonView(View.Extended.class)
     @NotNull
     @Size(max = 0, groups = DataUpdateValidation.class)
-    @Size(min = 1,max = 1, groups = DataUpdateValidation.class)
+    @Size(min = 1, max = 1, groups = NewOperationValidation.class)
     private List<OperationEvidenceDTO> operationEvidence;
+
     @JsonView(View.Extended.class)
     @Nullable
     private List<DiscountCodeDTO> discountCodes;
+
     @JsonView(View.Extended.class)
     @NotNull
     private Archive archive;

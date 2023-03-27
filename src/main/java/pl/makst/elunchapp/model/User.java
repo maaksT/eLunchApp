@@ -23,9 +23,10 @@ public class User {
     @NotNull
     @Embedded
     private PersonalData personalData;
+
     @Nullable
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<DeliveryAddress> addresses;
+    private List<DeliveryAddress> deliveryAddress;
 
     @NotNull
     @Embedded
@@ -37,7 +38,7 @@ public class User {
 
     @NotNull
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OperationEvidence> operationEvidences;
+    private List<OperationEvidence> operationEvidence;
 
     @Nullable
     @ManyToMany(mappedBy = "users")
@@ -46,6 +47,7 @@ public class User {
     @NotNull
     @Enumerated(EnumType.STRING)
     private Archive archive;
+
 
     public Long getId() {
         return id;
@@ -72,12 +74,12 @@ public class User {
     }
 
     @Nullable
-    public List<DeliveryAddress> getAddresses() {
-        return addresses;
+    public List<DeliveryAddress> getDeliveryAddress() {
+        return deliveryAddress;
     }
 
-    public void setAddresses(@Nullable List<DeliveryAddress> addresses) {
-        this.addresses = addresses;
+    public void setDeliveryAddress(@Nullable List<DeliveryAddress> addresses) {
+        this.deliveryAddress = addresses;
     }
 
     public LogginData getLogginData() {
@@ -93,16 +95,16 @@ public class User {
         return orders;
     }
 
-    public void setOrders(@Nullable List<Order> orders) {
-        this.orders = orders;
+    public void setOrders(@Nullable List<Order> orderDTOS) {
+        this.orders = orderDTOS;
     }
 
-    public List<OperationEvidence> getOperationEvidences() {
-        return operationEvidences;
+    public List<OperationEvidence> getOperationEvidence() {
+        return operationEvidence;
     }
 
-    public void setOperationEvidences(List<OperationEvidence> operationEvidences) {
-        this.operationEvidences = operationEvidences;
+    public void setOperationEvidence(List<OperationEvidence> operationEvidences) {
+        this.operationEvidence = operationEvidences;
     }
 
     @Nullable

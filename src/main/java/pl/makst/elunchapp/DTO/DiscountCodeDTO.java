@@ -17,30 +17,37 @@ import java.util.UUID;
 @GeneratePojoBuilder
 public class DiscountCodeDTO {
     public static class View {
-        public interface Basic{}
+        public interface Basic {}
         public interface Extended extends Basic {}
     }
+
     @JsonView(View.Basic.class)
     @NotNull
     private UUID uuid;
+
     @JsonView(View.Basic.class)
     @NotBlank
     private String code;
+
     @JsonView(View.Extended.class)
     @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal discount;
+
     @JsonView(View.Extended.class)
     @NotNull
     private DiscountUnit discountUnit;
+
     @JsonView(View.Basic.class)
     @NotNull
     @Embedded
     private PeriodDTO period;
+
     @JsonView(View.Extended.class)
     @Nullable
     private List<UserDTO> users;
+
     @JsonView(View.Extended.class)
     @Nullable
     private List<RestaurantDTO> restaurantDTOS;
@@ -87,6 +94,15 @@ public class DiscountCodeDTO {
     }
 
     @Nullable
+    public List<RestaurantDTO> getRestaurantDTOS() {
+        return restaurantDTOS;
+    }
+
+    public void setRestaurantDTOS(@Nullable List<RestaurantDTO> restaurantDTOS) {
+        this.restaurantDTOS = restaurantDTOS;
+    }
+
+    @Nullable
     public List<UserDTO> getUsers() {
         return users;
     }
@@ -96,11 +112,11 @@ public class DiscountCodeDTO {
     }
 
     @Nullable
-    public List<RestaurantDTO> getRestaurantDTOS() {
+    public List<RestaurantDTO> getRestaurants() {
         return restaurantDTOS;
     }
 
-    public void setRestaurantDTOS(@Nullable List<RestaurantDTO> restaurantDTOS) {
+    public void setRestaurants(@Nullable List<RestaurantDTO> restaurantDTOS) {
         this.restaurantDTOS = restaurantDTOS;
     }
 }

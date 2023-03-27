@@ -17,28 +17,38 @@ public class DeliveryAddress {
     @Column(unique = true)
     @NotNull
     private UUID uuid;
-    @NotNull
+
+    @Nullable
     private String description;
+
     @NotNull
     private String street;
+
     @NotNull
     private String streetNumber;
+
     @NotNull
     private String localNumber;
+
     @NotNull
     private String postcode;
+
     @NotNull
     private String city;
+
     @Nullable
     private String borough;
+
     @Nullable
     private String county;
+
     @Nullable
     private String state;
 
     @NotNull
     @ManyToOne
     private User user;
+
 
     public Long getId() {
         return id;
@@ -56,11 +66,12 @@ public class DeliveryAddress {
         this.uuid = uuid;
     }
 
+    @Nullable
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public void setDescription(@Nullable String description) {
         this.description = description;
     }
 
@@ -86,6 +97,14 @@ public class DeliveryAddress {
 
     public void setLocalNumber(String localNumber) {
         this.localNumber = localNumber;
+    }
+
+    public String getPostcode() {
+        return postcode;
+    }
+
+    public void setPostcode(String postcode) {
+        this.postcode = postcode;
     }
 
     public String getCity() {

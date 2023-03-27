@@ -13,21 +13,25 @@ import java.util.UUID;
 @GeneratePojoBuilder
 public class DishDTO {
     public static class View {
-        public interface Id{}
-        public interface Basic extends Id{}
+        public interface Id {}
+        public interface Basic extends Id {}
         public interface Extended extends Basic {}
     }
     public interface DataUpdateValidation {}
+
     @JsonView(View.Id.class)
     @NotNull
     private UUID uuid;
+
     @JsonView(View.Extended.class)
     @NotNull
     @Min(1)
     private Integer quantity;
+
     @JsonView(View.Extended.class)
     @NotNull
     private ProductDTO productDTO;
+
     @JsonView(View.Extended.class)
     @Nullable
     @Null(groups = DataUpdateValidation.class)

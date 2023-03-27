@@ -12,19 +12,25 @@ import javax.validation.constraints.NotNull;
 public class CompanyData {
 
     @NotNull
-    @Column(name ="companyName")
+    @Column(name = "companyName")
     private String name;
+
     @Embedded
     @NotNull
     private Address address;
+
     @NotNull
     private String NIP;
+
     @NotNull
     private String REGON;
+
     @NotNull
     private String phone;
+
     @NotNull
     private String email;
+
 
     public String getName() {
         return name;

@@ -17,6 +17,7 @@ public class Period {
     @Nullable
     private LocalDateTime end;
 
+
     @Nullable
     public LocalDateTime getBegin() {
         return begin;

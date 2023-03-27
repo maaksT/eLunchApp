@@ -11,6 +11,7 @@ import java.util.UUID;
 @GeneratePojoBuilder
 @Entity
 public class Dish {
+
     @Id
     @GeneratedValue
     private Long id;
@@ -30,6 +31,7 @@ public class Dish {
     @Nullable
     @ManyToMany(mappedBy = "dishes")
     private List<MenuItem> menuItems;
+
 
     public Long getId() {
         return id;
@@ -72,4 +74,3 @@ public class Dish {
         this.menuItems = menuItems;
     }
 }
-

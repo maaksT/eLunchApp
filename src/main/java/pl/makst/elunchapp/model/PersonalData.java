@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 @GeneratePojoBuilder
 @Embeddable
 public class PersonalData {
+
     @Nullable
     private String name;
 
@@ -17,14 +18,15 @@ public class PersonalData {
     private String surname;
 
     @Nullable
+    @Enumerated(EnumType.STRING)
+    private Sex sex;
+
+    @Nullable
     private String phone;
 
     @Nullable
     private String email;
 
-    @Nullable
-    @Enumerated(EnumType.STRING)
-    private Sex sex;
 
     @Nullable
     public String getName() {
@@ -45,6 +47,15 @@ public class PersonalData {
     }
 
     @Nullable
+    public Sex getSex() {
+        return sex;
+    }
+
+    public void setSex(@Nullable Sex sex) {
+        this.sex = sex;
+    }
+
+    @Nullable
     public String getPhone() {
         return phone;
     }
@@ -60,14 +71,5 @@ public class PersonalData {
 
     public void setEmail(@Nullable String email) {
         this.email = email;
-    }
-
-    @Nullable
-    public Sex getSex() {
-        return sex;
-    }
-
-    public void setSex(@Nullable Sex sex) {
-        this.sex = sex;
     }
 }

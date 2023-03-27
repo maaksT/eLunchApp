@@ -30,6 +30,7 @@ public class OpenTime {
     @ManyToOne
     private Restaurant restaurant;
 
+
     public Long getId() {
         return id;
     }

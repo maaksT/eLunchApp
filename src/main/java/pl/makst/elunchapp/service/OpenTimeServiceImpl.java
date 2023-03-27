@@ -1,16 +1,27 @@
 package pl.makst.elunchapp.service;
 
+import com.google.common.base.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 import pl.makst.elunchapp.DTO.OpenTimeDTO;
+import pl.makst.elunchapp.model.MenuItem;
+import pl.makst.elunchapp.model.OpenTime;
+import pl.makst.elunchapp.model.OpenTimeBuilder;
+import pl.makst.elunchapp.model.Restaurant;
 import pl.makst.elunchapp.repo.DishRepo;
 import pl.makst.elunchapp.repo.MenuItemRepo;
 import pl.makst.elunchapp.repo.OpenTimeRepo;
 import pl.makst.elunchapp.repo.RestaurantRepo;
+import pl.makst.elunchapp.utils.ConverterUtils;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static pl.makst.elunchapp.utils.ConverterUtils.convert;
 
 @Service
 public class OpenTimeServiceImpl implements OpenTimeService {
@@ -25,21 +36,49 @@ public class OpenTimeServiceImpl implements OpenTimeService {
 
     @Override
     public List<OpenTimeDTO> getAll() {
-        return null;
+        return openTimeRepo.findAll().stream()
+                .map(ConverterUtils::convert)
+                .collect(Collectors.toList());
     }
 
     @Override
     public void put(UUID uuid, OpenTimeDTO openTimeDTO) {
+        if (!Objects.equal(openTimeDTO.getUuid(), uuid)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        Restaurant restaurant = restaurantRepo.findByUuid(openTimeDTO.getRestaurantDTO().getUuid())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
 
+        OpenTime openTime = openTimeRepo.findByUuid(openTimeDTO.getUuid())
+                .orElseGet(() -> newOpenTime(uuid, restaurant));
+
+        if (!Objects.equal(openTime.getRestaurant().getUuid(), openTimeDTO.getRestaurantDTO().getUuid())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        openTime.setDayOfWeek(openTimeDTO.getDayOfWeek());
+        openTime.setPeriodTime(convert(openTimeDTO.getPeriodTimeDTO()));
+
+        if (openTime.getId() == null) {
+            openTimeRepo.save(openTime);
+        }
     }
 
     @Override
     public void delete(UUID uuid) {
-
+        OpenTime openTime = openTimeRepo.findByUuid(uuid)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        openTimeRepo.delete(openTime);
     }
 
     @Override
     public Optional<OpenTimeDTO> getByUuid(UUID uuid) {
-        return Optional.empty();
+        return openTimeRepo.findByUuid(uuid).map(ConverterUtils::convert);
+    }
+
+    private OpenTime newOpenTime(UUID uuid, Restaurant restaurant) {
+        return new OpenTimeBuilder()
+                .withUuid(uuid)
+                .withRestaurant(restaurant)
+                .build();
     }
 }

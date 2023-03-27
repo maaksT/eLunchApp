@@ -13,54 +13,65 @@ import java.util.UUID;
 @GeneratePojoBuilder
 public class OrderDTO {
     public static class View {
-        public interface Basic{}
+        public interface Basic {}
         public interface Extended extends Basic {}
     }
     public interface OrderValidation {}
     public interface OrderStatusValidation {}
+
     @JsonView(View.Basic.class)
     @NotNull
     private UUID uuid;
+
     @JsonView(View.Extended.class)
     @Digits(integer = 10, fraction = 2)
     @Min(0)
     @Null(groups = OrderValidation.class)
-    @NotNull
     private BigDecimal nettoPrice;
+
     @JsonView(View.Extended.class)
     @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal bruttoPrice;
+
     @JsonView(View.Extended.class)
     @Nullable
     private DiscountCodeDTO discountCodeDTO;
+
     @JsonView(View.Extended.class)
     @Digits(integer = 10, fraction = 2)
     @Min(0)
     @NotNull
     private BigDecimal amountToPayBrutto;
+
     @JsonView(View.Extended.class)
     @Nullable
     private String note;
+
     @JsonView(View.Basic.class)
-    @NotNull(groups = OrderStatusValidation.class)
     @Null(groups = OrderValidation.class)
+    @NotNull(groups = OrderStatusValidation.class)
     @Embedded
     private OrderStatusDTO orderStatusDTO;
+
     @JsonView(View.Extended.class)
     @NotNull
     private DeliveryAddressDTO deliveryAddressDTO;
+
     @JsonView(View.Extended.class)
     @NotNull
     @Size(min = 1)
     private List<OrderItemDTO> orderItemDTOS;
+
     @JsonView(View.Basic.class)
     @NotNull
     private UserDTO user;
+
     @JsonView(View.Basic.class)
     @NotNull
     private DelivererDTO delivererDTO;
+
     @JsonView(View.Basic.class)
     @NotNull
     private RestaurantDTO restaurantDTO;

@@ -32,6 +32,7 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Archive archive;
 
+
     public Long getId() {
         return id;
     }
@@ -56,12 +57,12 @@ public class Employee {
         this.personalData = personalData;
     }
 
-    public LogginData getLoginData() {
+    public LogginData getLogginData() {
         return logginData;
     }
 
-    public void setLoginData(LogginData logginData) {
-        this.logginData = logginData;
+    public void setLogginData(LogginData loginData) {
+        this.logginData = loginData;
     }
 
     public Archive getArchive() {

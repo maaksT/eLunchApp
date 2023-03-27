@@ -13,11 +13,13 @@ import javax.validation.constraints.Size;
 @Embeddable
 public class LogginDataDTO {
     public static class View {
-        public interface Basic{}
+        public interface Basic {}
     }
+
     @JsonView(View.Basic.class)
     @Size(min = 3)
     private String login;
+
     @JsonIgnore
     @Pattern(regexp = "(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{6,}$")
     private String password;

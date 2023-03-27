@@ -23,14 +23,17 @@ public class OperationEvidence {
     @NotNull
     @Enumerated(EnumType.STRING)
     private EvidenceType type;
-    @Column(scale = 2,precision = 12)
-    @Digits(integer = 10,fraction = 2)
-    @Min(0)
+
     @NotNull
+    @Column(scale = 2, precision = 12)
+    @Digits(integer = 10, fraction = 2)
+    @Min(0)
     private BigDecimal amount;
+
     @NotNull
     @ManyToOne
     private User user;
+
 
     public Long getId() {
         return id;

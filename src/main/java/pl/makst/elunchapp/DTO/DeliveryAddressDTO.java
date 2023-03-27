@@ -11,39 +11,50 @@ import java.util.UUID;
 @GeneratePojoBuilder
 public class DeliveryAddressDTO {
     public static class View {
-        public interface Basic{}
+        public interface Basic {}
         public interface Extended extends Basic {}
     }
+
     @JsonView(View.Basic.class)
     @NotNull
     private UUID uuid;
+
     @JsonView(View.Basic.class)
     @Nullable
     private String description;
+
     @JsonView(View.Extended.class)
     @NotNull
     private String street;
+
     @JsonView(View.Extended.class)
     @NotNull
     private String streetNumber;
+
     @JsonView(View.Extended.class)
     @NotNull
     private String localNumber;
+
     @JsonView(View.Extended.class)
     @NotNull
     private String postcode;
+
     @JsonView(View.Extended.class)
     @NotNull
     private String city;
+
     @JsonView(View.Extended.class)
     @Nullable
     private String borough;
+
     @JsonView(View.Extended.class)
     @Nullable
     private String county;
+
     @JsonView(View.Extended.class)
     @Nullable
     private String state;
+
     @JsonView(View.Basic.class)
     @NotNull
     private UserDTO user;

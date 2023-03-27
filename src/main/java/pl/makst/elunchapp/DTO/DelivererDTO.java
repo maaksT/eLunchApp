@@ -13,10 +13,11 @@ import java.util.List;
 public class DelivererDTO extends EmployeeDTO {
     public static class View {
         public interface Id extends EmployeeDTO.View.Id {}
-        public interface Basic extends EmployeeDTO.View.Basic{}
+        public interface Basic extends EmployeeDTO.View.Basic {}
         public interface Extended extends Basic, EmployeeDTO.View.Extended {}
     }
     public interface NewDelivererValidation {}
+
     @JsonView(View.Extended.class)
     @Nullable
     @Null(groups = NewDelivererValidation.class)

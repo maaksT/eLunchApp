@@ -13,14 +13,17 @@ import java.util.UUID;
 @GeneratePojoBuilder
 public class IngredientDTO {
     public static class View {
-        public interface Basic{}
+        public interface Basic {}
     }
+
     @JsonView(View.Basic.class)
     @NotNull
     private UUID uuid;
+
     @JsonView(View.Basic.class)
     @NotBlank
     private String name;
+
     @JsonView(View.Basic.class)
     @NotNull
     private Boolean isAllergen;

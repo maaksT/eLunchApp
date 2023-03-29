@@ -15,6 +15,7 @@ public interface OrderItemService {
     void add(OrderItem orderItem);
     void delete(OrderItem orderItem);
     Optional<OrderItem> getByUuid(UUID uuid);
-    BigDecimal calculatePrice(List<OrderItem> orderItems, BigDecimal startPrice, PriceType priceType) throws UnsupportedDataTypeException;
-    BigDecimal applyDiscount(DiscountCode discountCode,BigDecimal orderBruttoPrice) throws UnsupportedDataTypeException;
+
+    BigDecimal calculatePrice(List<OrderItem> orderItemList, BigDecimal startPrice, PriceType priceType) throws UnsupportedDataTypeException;
+    BigDecimal applyDiscount(DiscountCode discountCode, BigDecimal orderBruttoPrice) throws UnsupportedDataTypeException;
 }

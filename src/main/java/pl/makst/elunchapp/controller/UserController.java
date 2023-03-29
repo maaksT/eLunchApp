@@ -9,6 +9,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import pl.makst.elunchapp.DTO.*;
+import pl.makst.elunchapp.events.OperationEvidenceCreator;
 import pl.makst.elunchapp.service.RestaurantService;
 import pl.makst.elunchapp.service.UserService;
 
@@ -65,6 +66,9 @@ public class UserController {
     @PostMapping("/{uuid}/new-operation")
     public void postOperation(@PathVariable UUID uuid, @RequestBody @Valid UserDTO json) {
         userService.validateNewOperation(uuid,json);
+
+        OperationEvidenceCreator operationEvidenceCreator = new OperationEvidenceCreator(this,json);
+        applicationEventPublisher.publishEvent(operationEvidenceCreator);
     }
     @Transactional
     @Validated(NewOperationValidation.class)

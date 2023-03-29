@@ -52,6 +52,6 @@ public class DeliveryAddressController {
     @Transactional
     @DeleteMapping("/{uuid}")
     public void delete(@PathVariable UUID uuid) {
-
+        deliveryAddressService.delete(uuid);
     }
 }

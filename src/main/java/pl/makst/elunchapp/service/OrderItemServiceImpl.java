@@ -2,10 +2,10 @@ package pl.makst.elunchapp.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import pl.makst.elunchapp.service.OrderItemService;
 import pl.makst.elunchapp.model.DiscountCode;
 import pl.makst.elunchapp.model.OrderItem;
 import pl.makst.elunchapp.model.enums.PriceType;
-import pl.makst.elunchapp.repo.MenuItemRepo;
 import pl.makst.elunchapp.repo.OperationEvidenceRepo;
 import pl.makst.elunchapp.repo.OrderItemRepo;
 
@@ -19,12 +19,10 @@ import java.util.UUID;
 @Service
 public class OrderItemServiceImpl implements OrderItemService {
     private final OrderItemRepo orderItemRepo;
-    private final MenuItemRepo menuItemRepo;
 
     @Autowired
-    public OrderItemServiceImpl(OrderItemRepo orderItemRepo, MenuItemRepo menuItemRepo) {
+    public OrderItemServiceImpl(OrderItemRepo orderItemRepo) {
         this.orderItemRepo = orderItemRepo;
-        this.menuItemRepo = menuItemRepo;
     }
 
 
@@ -34,7 +32,7 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public void add (OrderItem orderItem) {
+    public void add(OrderItem orderItem) {
         orderItemRepo.save(orderItem);
     }
 
@@ -49,13 +47,14 @@ public class OrderItemServiceImpl implements OrderItemService {
     }
 
     @Override
-    public BigDecimal calculatePrice(List<OrderItem> orderItems, BigDecimal startPrice, PriceType priceType) throws UnsupportedDataTypeException {
+    public BigDecimal calculatePrice(List<OrderItem> orderItemList, BigDecimal startPrice, PriceType priceType) throws UnsupportedDataTypeException {
         BigDecimal orderPrice = startPrice;
-        for (OrderItem orderItem : orderItems) {
+
+        for (OrderItem orderItem : orderItemList) {
             switch (priceType) {
                 case NETTO:
                     orderPrice = orderPrice.add(
-                      orderItem.getMenuItem().getNettoPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()))
+                            orderItem.getMenuItem().getNettoPrice().multiply(BigDecimal.valueOf(orderItem.getQuantity()))
                     );
                     break;
                 case BRUTTO:
@@ -64,7 +63,7 @@ public class OrderItemServiceImpl implements OrderItemService {
                     );
                     break;
                 default:
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedDataTypeException();
             }
         }
         return orderPrice;
@@ -75,6 +74,7 @@ public class OrderItemServiceImpl implements OrderItemService {
         if (discountCode == null) {
             return orderBruttoPrice;
         }
+
         BigDecimal amountToPayBrutto;
 
         switch (discountCode.getDiscountUnit()) {
@@ -87,8 +87,9 @@ public class OrderItemServiceImpl implements OrderItemService {
                 ).divide(BigDecimal.valueOf(100), RoundingMode.HALF_UP);
                 break;
             default:
-                throw new UnsupportedOperationException();
+                throw new UnsupportedDataTypeException();
         }
+
         return amountToPayBrutto;
     }
 }

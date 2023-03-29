@@ -5,13 +5,37 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import pl.makst.elunchapp.service.OrderItemService;
+import pl.makst.elunchapp.service.OrderService;
+import pl.makst.elunchapp.DTO.OperationEvidenceDTO;
+import pl.makst.elunchapp.DTO.OperationEvidenceDTOBuilder;
 import pl.makst.elunchapp.DTO.OrderDTO;
 import pl.makst.elunchapp.DTO.OrderItemDTO;
 import pl.makst.elunchapp.DTO.OrderStatusDTO;
 import pl.makst.elunchapp.DTO.UserDTO;
-import pl.makst.elunchapp.model.*;
+import pl.makst.elunchapp.model.Deliverer;
+import pl.makst.elunchapp.model.DeliveryAddress;
+import pl.makst.elunchapp.model.DiscountCode;
+import pl.makst.elunchapp.model.MenuItem;
+import pl.makst.elunchapp.model.Order;
+import pl.makst.elunchapp.model.OrderBuilder;
+import pl.makst.elunchapp.model.OrderItem;
+import pl.makst.elunchapp.model.OrderItemBuilder;
+import pl.makst.elunchapp.model.OrderStatus;
+import pl.makst.elunchapp.model.OrderStatusBuilder;
+import pl.makst.elunchapp.model.Restaurant;
+import pl.makst.elunchapp.model.User;
+import pl.makst.elunchapp.model.enums.EvidenceType;
 import pl.makst.elunchapp.model.enums.PriceType;
-import pl.makst.elunchapp.repo.*;
+import pl.makst.elunchapp.repo.DelivererRepo;
+import pl.makst.elunchapp.repo.DeliveryAddressRepo;
+import pl.makst.elunchapp.repo.DiscountCodeRepo;
+import pl.makst.elunchapp.repo.DishRepo;
+import pl.makst.elunchapp.repo.MenuItemRepo;
+import pl.makst.elunchapp.repo.OrderItemRepo;
+import pl.makst.elunchapp.repo.OrderRepo;
+import pl.makst.elunchapp.repo.RestaurantRepo;
+import pl.makst.elunchapp.repo.UserRepo;
 import pl.makst.elunchapp.utils.ConverterUtils;
 
 import javax.activation.UnsupportedDataTypeException;
@@ -29,21 +53,32 @@ public class OrderServiceImpl implements OrderService {
     private final UserRepo userRepo;
     private final RestaurantRepo restaurantRepo;
     private final DelivererRepo delivererRepo;
+    private final DeliveryAddressRepo deliveryAddressRepo;
     private final MenuItemRepo menuItemRepo;
     private final DiscountCodeRepo discountCodeRepo;
     private final OrderItemRepo orderItemRepo;
     private final OrderItemService orderItemService;
+
     @Autowired
-    public OrderServiceImpl(OrderRepo orderRepo, UserRepo userRepo, RestaurantRepo restaurantRepo, DelivererRepo delivererRepo, MenuItemRepo menuItemRepo, DiscountCodeRepo discountCodeRepo, OrderItemRepo orderItemRepo, OrderItemService orderItemService) {
+    public OrderServiceImpl(OrderRepo orderRepo,
+                            UserRepo userRepo,
+                            RestaurantRepo restaurantRepo,
+                            DelivererRepo delivererRepo,
+                            DeliveryAddressRepo deliveryAddressRepo, MenuItemRepo menuItemRepo,
+                            DiscountCodeRepo discountCodeRepo,
+                            OrderItemRepo orderItemRepo,
+                            OrderItemService orderItemService) {
         this.orderRepo = orderRepo;
         this.userRepo = userRepo;
         this.restaurantRepo = restaurantRepo;
         this.delivererRepo = delivererRepo;
+        this.deliveryAddressRepo = deliveryAddressRepo;
         this.menuItemRepo = menuItemRepo;
         this.discountCodeRepo = discountCodeRepo;
         this.orderItemRepo = orderItemRepo;
         this.orderItemService = orderItemService;
     }
+
 
     @Override
     public List<OrderDTO> getAll() {
@@ -54,28 +89,27 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void put(UUID uuid, OrderDTO orderDTO) {
-        if (!Objects.equal(orderDTO.getUuid(),uuid)) {
+        if (!Objects.equal(orderDTO.getUuid(), uuid)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
         User user = userRepo.findByUuid(orderDTO.getUser().getUuid())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
         Restaurant restaurant = restaurantRepo.findByUuid(orderDTO.getRestaurant().getUuid())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
         Deliverer deliverer = delivererRepo.findByUuid(orderDTO.getDeliverer().getUuid())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+        DeliveryAddress deliveryAddress = deliveryAddressRepo.findByUuid(orderDTO.getDeliveryAddressDTO().getUuid())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
         Order order = orderRepo.findByUuid(orderDTO.getUuid())
                 .orElseGet(() -> newOrder(uuid, user, restaurant));
 
-        if (!Objects.equal(order.getUser().getUuid(),orderDTO.getUser().getUuid())) {
+        if (!Objects.equal(order.getUser().getUuid(), orderDTO.getUser().getUuid())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-        if (!Objects.equal(orderDTO.getRestaurant().getUuid(),orderDTO.getRestaurant().getUuid())) {
+        if (!Objects.equal(order.getRestaurant().getUuid(), orderDTO.getRestaurant().getUuid())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
-
         if (order.getStatus().getDeliveryTime() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -86,12 +120,11 @@ public class OrderServiceImpl implements OrderService {
         BigDecimal orderNettoPrice;
         BigDecimal orderBruttoPrice;
         BigDecimal amountToPayBrutto;
-
-        try{
+        try {
             orderNettoPrice = orderItemService.calculatePrice(orderItems, BigDecimal.ZERO, PriceType.NETTO);
             orderBruttoPrice = orderItemService.calculatePrice(orderItems, BigDecimal.ZERO, PriceType.BRUTTO);
             amountToPayBrutto = orderItemService.applyDiscount(discountCode, orderBruttoPrice);
-        }catch (UnsupportedDataTypeException e){
+        } catch (UnsupportedDataTypeException e) {
             e.printStackTrace();
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
@@ -103,6 +136,7 @@ public class OrderServiceImpl implements OrderService {
         order.setDiscountCode(discountCode);
         order.setOrderItems(orderItems);
         order.setDeliverer(deliverer);
+        order.setDeliveryAddress(deliveryAddress);
 
         if (order.getId() == null) {
             orderRepo.save(order);
@@ -113,18 +147,25 @@ public class OrderServiceImpl implements OrderService {
     public void delete(UUID uuid) {
         Order order = orderRepo.findByUuid(uuid)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
+        if (order.getStatus().getIsPaid()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+
         orderRepo.delete(order);
+
     }
 
     @Override
     public Optional<OrderDTO> getByUuid(UUID uuid) {
-        return Optional.empty();
+        return orderRepo.findByUuid(uuid).map(ConverterUtils::convert);
     }
 
     @Override
     public void setIsPaid(OrderDTO orderDTO) {
         Order order = orderRepo.findByUuid(orderDTO.getUuid())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         if (!order.getStatus().getIsPaid()) {
             order.getStatus().setIsPaid(true);
         } else {
@@ -136,9 +177,11 @@ public class OrderServiceImpl implements OrderService {
     public void setIsGivedOut(UUID uuid, OrderStatusDTO orderStatusDTO) {
         Order order = orderRepo.findByUuid(uuid)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+
         if (!order.getStatus().getIsPaid() || order.getStatus().getDeliveryTime() != null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
         order.getStatus().setGiveOutTime(orderStatusDTO.getGiveOutTime());
     }
 
@@ -146,16 +189,32 @@ public class OrderServiceImpl implements OrderService {
     public void setIsDelivered(UUID uuid, OrderStatusDTO orderStatusDTO) {
         Order order = orderRepo.findByUuid(uuid)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-        if (!order.getStatus().getIsPaid() || order.getStatus().getGiveOutTime() != null) {
+
+        if (!order.getStatus().getIsPaid() || order.getStatus().getGiveOutTime() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
         order.getStatus().setDeliveryTime(orderStatusDTO.getDeliveryTime());
     }
 
     @Override
     public UserDTO newOperationForPaidOrder(OrderDTO orderDTO) {
-        return null;
+        User user = userRepo.findByUuid(orderDTO.getUser().getUuid())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        UserDTO userDTO = ConverterUtils.convert(user);
+        userDTO.setOperationEvidence(List.of(newEwidenceForOrderPayment(orderDTO)));
+        return userDTO;
     }
+
+    private OperationEvidenceDTO newEwidenceForOrderPayment(OrderDTO orderDTO) {
+        return new OperationEvidenceDTOBuilder()
+                .withDate(Instant.now())
+                .withUser(orderDTO.getUser())
+                .withAmount(orderDTO.getAmountToPayBrutto())
+                .withType(EvidenceType.PAYMENT)
+                .build();
+    }
+
 
     private DiscountCode putDiscountCode(OrderDTO orderDTO) {
         DiscountCode discountCode = null;
@@ -181,27 +240,23 @@ public class OrderServiceImpl implements OrderService {
 
     private List<OrderItem> putOrderItems(OrderDTO orderDTO) {
         List<OrderItem> orderItems = new ArrayList<>();
-
         for (OrderItemDTO orderItemDTO : orderDTO.getOrderItems()) {
             MenuItem menuItem = menuItemRepo.findByUuid(orderItemDTO.getMenuItem().getUuid())
-                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
-            OrderItem orderItem = orderItemRepo.findByUuid(orderDTO.getUuid())
-                    .orElseGet(() -> newORderItem(orderDTO.getUuid()));
-
-            orderItem.setQuantity(orderItem.getQuantity());
+            OrderItem orderItem = orderItemService.getByUuid(orderItemDTO.getUuid())
+                    .orElseGet(() -> newOrderItem(orderItemDTO.getUuid()));
+            orderItem.setQuantity(orderItemDTO.getQuantity());
             orderItem.setMenuItem(menuItem);
-
             if (orderItem.getId() == null) {
                 orderItemRepo.save(orderItem);
             }
-
             orderItems.add(orderItem);
         }
         return orderItems;
     }
 
-    private OrderItem newORderItem(UUID uuid) {
+    private OrderItem newOrderItem(UUID uuid) {
         return new OrderItemBuilder()
                 .withUuid(uuid)
                 .build();

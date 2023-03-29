@@ -46,26 +46,29 @@ public class DiscountCodeServiceImpl implements DiscountCodeService {
         if (!Objects.equal(discountCodeDTO.getUuid(), uuid)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
+
         List<User> users = new ArrayList<>();
         if (discountCodeDTO.getUsers() != null) {
             for (UserDTO userDTO : discountCodeDTO.getUsers()) {
                 User user = userRepo.findByUuid(userDTO.getUuid())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
-                userRepo.save(user);
+                users.add(user);
             }
         }
+
         List<Restaurant> restaurants = new ArrayList<>();
         if (discountCodeDTO.getRestaurants() != null) {
             for (RestaurantDTO restaurantDTO : discountCodeDTO.getRestaurants()) {
                 Restaurant restaurant = restaurantRepo.findByUuid(restaurantDTO.getUuid())
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST));
-                restaurantRepo.save(restaurant);
+                restaurants.add(restaurant);
             }
         }
+
         DiscountCode discountCode = discountCodeRepo.findByUuid(discountCodeDTO.getUuid())
                 .orElseGet(() -> newDiscountCode(uuid));
 
-        discountCode.setCode(discountCode.getCode());
+        discountCode.setCode(discountCodeDTO.getCode());
         discountCode.setDiscount(discountCodeDTO.getDiscount());
         discountCode.setDiscountUnit(discountCodeDTO.getDiscountUnit());
         discountCode.setPeriod(convert(discountCodeDTO.getPeriod()));
@@ -89,10 +92,10 @@ public class DiscountCodeServiceImpl implements DiscountCodeService {
         return discountCodeRepo.findByUuid(uuid).map(ConverterUtils::convert);
     }
 
+
     private DiscountCode newDiscountCode(UUID uuid) {
         return new DiscountCodeBuilder()
                 .withUuid(uuid)
                 .build();
     }
-
 }

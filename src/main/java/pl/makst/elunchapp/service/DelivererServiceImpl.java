@@ -2,6 +2,10 @@ package pl.makst.elunchapp.service;
 
 import com.google.common.base.Objects;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -23,6 +27,7 @@ import java.util.stream.Collectors;
 import static pl.makst.elunchapp.utils.ConverterUtils.convert;
 
 @Service
+@CacheConfig(cacheNames = "deliverers")
 public class DelivererServiceImpl implements DelivererService {
     private final DelivererRepo delivererRepo;
     private final OrderRepo orderRepo;
@@ -31,14 +36,19 @@ public class DelivererServiceImpl implements DelivererService {
         this.delivererRepo = delivererRepo;
         this.orderRepo = orderRepo;
     }
-
+    @Cacheable(cacheNames = "deliverers")
     @Override
     public List<DelivererDTO> getAll() {
+        try {
+            Thread.sleep(1000L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         return delivererRepo.findAll().stream()
                 .map(ConverterUtils::convert)
                 .collect(Collectors.toList());
     }
-
+    @CacheEvict(cacheNames = "deliverers", allEntries = true)
     @Override
     public void put(UUID uuid, DelivererDTO delivererDTO) {
         if (!Objects.equal(delivererDTO.getUuid(), uuid)) {
@@ -64,7 +74,7 @@ public class DelivererServiceImpl implements DelivererService {
             delivererRepo.save(deliverer);
         }
     }
-
+    @CacheEvict(cacheNames = "deliverers", allEntries = true)
     @Override
     public void delete(UUID uuid) {
         Deliverer deliverer = delivererRepo.findByUuid(uuid)
